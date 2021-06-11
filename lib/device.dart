@@ -143,13 +143,17 @@ class SamsungSmartTV {
       }
     });
 
-    ws.sink.add(data);
+    try {
+      ws.sink.add(data);
+    } catch (e) {
+      isConnected = false;
+      await connect(null);
+      if (isConnected) ws.sink.add(data);
+    }
 
     // add a delay so TV has time to execute
     Timer(Duration(seconds: kConnectionTimeout), () async {
-      isConnected = false;
-      await connect(null);
-      if (isConnected) sendKey(key);
+      throw ("TV timeout");
     });
 
     return Future.delayed(Duration(milliseconds: kKeyDelay));
