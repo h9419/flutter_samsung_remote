@@ -147,8 +147,9 @@ class SamsungSmartTV {
       ws.sink.add(data);
     } catch (e) {
       isConnected = false;
-      await connect(null);
-      if (isConnected) ws.sink.add(data);
+      connect(null).then(() {
+        ws?.sink?.add(data);
+      });
     }
 
     // add a delay so TV has time to execute
