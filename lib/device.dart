@@ -11,7 +11,7 @@ import 'package:web_socket_channel/io.dart';
 import 'key_codes.dart';
 
 final int kConnectionTimeout = 60;
-final kKeyDelay = 200;
+final kKeyDelay = 400;
 final kWakeOnLanDelay = 5000;
 final kUpnpTimeout = 1000;
 
@@ -146,10 +146,8 @@ class SamsungSmartTV {
     try {
       ws.sink.add(data);
     } catch (e) {
-      isConnected = false;
-      await connect(() {
-        ws?.sink?.add(data);
-      });
+      await connect(null);
+      ws.sink.add(data);
     }
 
     // add a delay so TV has time to execute
