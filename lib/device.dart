@@ -127,7 +127,7 @@ class SamsungSmartTV {
     isConnected = false;
   }
 
-  sendKey(KEY_CODES key) async {
+  Future<bool> sendKey(KEY_CODES key) async {
     if (!isConnected) {
       await connect(null);
     }
@@ -146,8 +146,7 @@ class SamsungSmartTV {
     try {
       ws.sink.add(data);
     } catch (e) {
-      await connect(null);
-      ws.sink.add(data);
+      return false;
     }
 
     // add a delay so TV has time to execute
