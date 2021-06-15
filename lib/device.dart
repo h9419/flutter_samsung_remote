@@ -105,6 +105,8 @@ class SamsungSmartTV {
       // ws.sink.add("received!");
     }, onDone: () {
       isConnected = false;
+      // reconnect upon finishing
+      connect(null);
       updateState();
     }, onError: (e) {
       isConnected = false;
@@ -153,9 +155,9 @@ class SamsungSmartTV {
     }
 
     // add a delay so TV has time to execute
-    Timer(Duration(seconds: kConnectionTimeout), () async {
-      throw ("TV timeout");
-    });
+    // Timer(Duration(seconds: kConnectionTimeout), () async {
+    //   throw ("TV timeout");
+    // });
 
     return Future.delayed(Duration(milliseconds: kKeyDelay));
   }

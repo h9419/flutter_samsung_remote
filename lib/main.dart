@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hardware_buttons/hardware_buttons.dart' as HardwareButtons;
 
+import 'volume_buttons.dart';
 import 'device.dart';
 import 'key_codes.dart';
 
@@ -45,8 +45,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  StreamSubscription<HardwareButtons.VolumeButtonEvent>
-      _volumeButtonSubscription;
+  StreamSubscription<VolumeButtonEvent> _volumeButtonSubscription;
   SamsungSmartTV tv;
   bool _touchpadShown = false;
   Offset initialOffset;
@@ -88,10 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     connectTV();
     // connect to volumn buttons
-    _volumeButtonSubscription =
-        HardwareButtons.volumeButtonEvents.listen((event) {
+    _volumeButtonSubscription = volumeButtonEvents.listen((event) {
       if (tv.isConnected) {
-        if (event == HardwareButtons.VolumeButtonEvent.VOLUME_UP) {
+        if (event == VolumeButtonEvent.VOLUME_UP) {
           tv.sendKey(KEY_CODES.KEY_VOLUP);
         } else {
           tv.sendKey(KEY_CODES.KEY_VOLDOWN);
