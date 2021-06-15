@@ -103,6 +103,9 @@ class SamsungSmartTV {
       // });
 
       // ws.sink.add("received!");
+    }, onDone: () {
+      isConnected = false;
+      updateState();
     }, onError: (e) {
       isConnected = false;
       updateState();
