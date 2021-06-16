@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   SamsungSmartTV tv;
   bool _touchpadShown = false;
   Offset initialOffset;
-
+  final textController = TextEditingController();
   void setInitialOffset(details) async {
     if (initialOffset == null) {
       initialOffset = details.localPosition;
@@ -376,6 +376,40 @@ class _MyHomePageState extends State<MyHomePage> {
                               size: 20, color: Colors.white54),
                           onPressed: () async {
                             await tv.sendKey(KEY_CODES.KEY_REWIND);
+                          },
+                        ),
+                        ControllerButton(
+                          child: Icon(Icons.keyboard,
+                              size: 20, color: Colors.white54),
+                          onPressed: () async {
+                            await showDialog(
+                              context: context,
+                              builder: (ctxDialog) => Container(
+                                child: AlertDialog(
+                                  contentPadding: const EdgeInsets.all(16.0),
+                                  content: TextField(
+                                    autofocus: true,
+                                    controller: textController,
+                                    decoration: new InputDecoration(
+                                        labelText: 'Search on YouTube',
+                                        hintText: 'eg. Wintergatan'),
+                                  ),
+                                  actions: [
+                                    MaterialButton(
+                                        child: const Text('CANCEL'),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        }),
+                                    MaterialButton(
+                                        child: const Text('OK'),
+                                        onPressed: () {
+                                          tv.input(textController.text);
+                                          Navigator.pop(context);
+                                        })
+                                  ],
+                                ),
+                              ),
+                            );
                           },
                         ),
                         ControllerButton(

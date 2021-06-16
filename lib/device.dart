@@ -160,6 +160,106 @@ class SamsungSmartTV {
     return Future.delayed(Duration(milliseconds: kKeyDelay));
   }
 
+  Future<void> input(String text) async {
+    if (!isConnected) {
+      await connect(null);
+    }
+    // // sending base 64 string, does not work for youtube
+    // final data = json.encode({
+    //   "method": 'ms.remote.control',
+    //   "params": {
+    //     "Cmd": base64.encode(utf8.encode(text)),
+    //     "TypeOfRemote": "SendInputString",
+    //     "DataOfCmd": 'base64',
+    //   }
+    // });
+    // try {
+    //   ws.sink.add(data);
+    // } catch (e) {
+    //   return;
+    // }
+    List<String> commands = [
+      'KEY_RETURN',
+      'KEY_RETURN',
+      'KEY_RETURN',
+      'KEY_RETURN',
+      'KEY_ENTER',
+      'KEY_LEFT',
+      'KEY_UP',
+      'KEY_RIGHT',
+      'KEY_RIGHT',
+      'KEY_RIGHT'
+    ];
+
+    List<int> lastPos = [0, 0, 0];
+    for (int rune in text.toUpperCase().runes) {
+      List<int> newPos = [0, 0, 0];
+      if ('A'.runes.first <= rune && rune <= 'Z'.runes.first) {
+        rune -= 'A'.runes.first;
+        newPos = [rune % 7, rune ~/ 7, 0];
+      } else if ('1'.runes.first <= rune && rune <= '9'.runes.first) {
+        rune -= '1'.runes.first;
+        newPos = [rune % 3, rune ~/ 3, 1];
+      } else if (' '.runes.first == rune) {
+        newPos = [lastPos[0], lastPos[2] == 0 ? 4 : 3, lastPos[2]];
+      } else if ('0'.runes.first == rune) {
+        newPos = [2, 3, 1];
+      } else {
+        continue;
+      }
+
+      int tmp;
+      // flip
+      if (newPos[2] != lastPos[2]) {
+        // vertical move
+        tmp = 1 - lastPos[1];
+        for (int i = 0; i < tmp; ++i) commands.add("KEY_DOWN");
+        for (int i = 0; i < -tmp; ++i) commands.add("KEY_UP");
+        // horizontal move
+        tmp = 7 - lastPos[0];
+        for (int i = 0; i < tmp; ++i) commands.add("KEY_RIGHT");
+        for (int i = 0; i < -tmp; ++i) commands.add("KEY_LEFT");
+        commands.add("KEY_ENTER");
+        lastPos = [7, 1, newPos[2]];
+      }
+      // vertical move
+      tmp = newPos[1] - lastPos[1];
+      for (int i = 0; i < tmp; ++i) commands.add("KEY_DOWN");
+      for (int i = 0; i < -tmp; ++i) commands.add("KEY_UP");
+      // horizontal move
+      tmp = newPos[0] - lastPos[0];
+      for (int i = 0; i < tmp; ++i) commands.add("KEY_RIGHT");
+      for (int i = 0; i < -tmp; ++i) commands.add("KEY_LEFT");
+      commands.add("KEY_ENTER");
+      lastPos = newPos;
+    }
+    for (int i = 0; i < 5 - lastPos[1] + lastPos[2]; ++i)
+      commands.add("KEY_DOWN");
+
+    // print("Send key command  ${key.toString().split('.').last}");
+    for (var i = 0; i < commands.length; i++) {
+      final data = json.encode({
+        "method": 'ms.remote.control',
+        "params": {
+          "Cmd": 'Click',
+          "DataOfCmd": commands[i],
+          "Option": false,
+          "TypeOfRemote": 'SendRemoteKey',
+        }
+      });
+      if (i == 4)
+        await Future.delayed(const Duration(milliseconds: 1000));
+      else if (i < 10 && i > 4 || commands[i] == 'KEY_ENTER')
+        await Future.delayed(const Duration(milliseconds: 300));
+      else
+        await Future.delayed(const Duration(milliseconds: 100));
+      try {
+        await ws.sink.add(data);
+      } catch (e) {
+        return;
+      }
+    }
+  }
   //static method to discover Samsung Smart TVs in the network using the UPNP protocol
 
   static discover() async {
