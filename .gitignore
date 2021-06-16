@@ -77,3 +77,4 @@ ios/Podfile.lock
 ios/Runner.xcodeproj/project.pbxproj
 ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata
 ios/Runner.xcworkspace/contents.xcworkspacedata
+pubspec.lock

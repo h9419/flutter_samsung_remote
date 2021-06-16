@@ -42,9 +42,7 @@ class SamsungSmartTV {
   connect(updateState, {appName = 'SamsungSmartTVRemote'}) async {
     var completer = new Completer();
 
-    try {
-      ws?.sink?.close();
-    } catch (e) {}
+    disconnect();
     // get device info
     // info = await getDeviceInfo();
     final prefs = await SharedPreferences.getInstance();
@@ -128,7 +126,7 @@ class SamsungSmartTV {
 
   disconnect() {
     // ws.sink.close(status.goingAway);
-    ws.sink.close();
+    ws?.sink?.close();
     isConnected = false;
   }
 
