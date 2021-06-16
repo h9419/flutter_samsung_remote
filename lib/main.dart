@@ -57,22 +57,22 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void updateOffset(details) async {
-    const double threshold = 60;
+    const double threshold = 50;
     if (initialOffset == null) {
       return;
     }
     Offset tmp = details.localPosition - initialOffset;
-    if (tmp.dx > 50) {
+    if (tmp.dx > threshold) {
       initialOffset = initialOffset + Offset(threshold, 0);
       tv.sendKey(KEY_CODES.KEY_RIGHT);
-    } else if (tmp.dx < -50) {
+    } else if (tmp.dx < -threshold) {
       initialOffset = initialOffset + Offset(-threshold, 0);
       tv.sendKey(KEY_CODES.KEY_LEFT);
     }
-    if (tmp.dy > 50) {
+    if (tmp.dy > threshold) {
       initialOffset = initialOffset + Offset(0, threshold);
       tv.sendKey(KEY_CODES.KEY_DOWN);
-    } else if (tmp.dy < -50) {
+    } else if (tmp.dy < -threshold) {
       initialOffset = initialOffset + Offset(0, -threshold);
       tv.sendKey(KEY_CODES.KEY_UP);
     }
@@ -398,12 +398,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                     MaterialButton(
                                         child: const Text('CANCEL'),
                                         onPressed: () {
+                                          textController.clear();
                                           Navigator.pop(context);
                                         }),
                                     MaterialButton(
                                         child: const Text('OK'),
                                         onPressed: () {
                                           tv.input(textController.text);
+                                          textController.clear();
                                           Navigator.pop(context);
                                         })
                                   ],
