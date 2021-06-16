@@ -217,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               )
             : Container(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -369,7 +369,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     SizedBox(height: 50),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ControllerButton(
                           child: Icon(Icons.fast_rewind,
@@ -384,7 +384,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           onPressed: () async {
                             await showDialog(
                               context: context,
-                              builder: (ctxDialog) => Container(
+                              builder: (ctxDialog) => SingleChildScrollView(
                                 child: AlertDialog(
                                   contentPadding: const EdgeInsets.all(16.0),
                                   content: TextField(
