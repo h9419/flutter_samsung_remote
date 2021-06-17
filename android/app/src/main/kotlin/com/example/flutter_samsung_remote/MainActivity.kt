@@ -28,21 +28,15 @@ class MainActivity: FlutterActivity() , EventChannel.StreamHandler {
     var action = event.getAction()
     if (action == KeyEvent.ACTION_DOWN) {
       var keycode = event.getKeyCode()
-      if (keycode == KeyEvent.KEYCODE_VOLUME_UP) {
-        this.streamSink?.success(keycode)
-        return true
-      }
-      else if (keycode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-        this.streamSink?.success(keycode)
-        return true
-      }
-      else if (keycode == KeyEvent.KEYCODE_MENU) {
-        this.streamSink?.success(keycode)
-        return true
-      }
-      else if (keycode == 228) { // switch sim button on LG E435
-        this.streamSink?.success(keycode)
-        return true
+      when (keycode) {
+        KeyEvent.KEYCODE_VOLUME_UP,
+        KeyEvent.KEYCODE_VOLUME_DOWN,
+        KeyEvent.KEYCODE_MENU,
+        // 228 is switch sim button on LG E435
+        228 -> {
+          this.streamSink?.success(keycode)
+          return true
+        }
       }
     }
     return super.dispatchKeyEvent(event)
