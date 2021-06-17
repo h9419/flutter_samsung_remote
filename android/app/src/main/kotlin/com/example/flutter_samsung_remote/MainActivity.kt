@@ -4,6 +4,7 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import android.view.KeyEvent
 import io.flutter.plugin.common.EventChannel
+import android.content.Intent
 
 class MainActivity: FlutterActivity() , EventChannel.StreamHandler {
   // EventChannel.StreamHandler functions
@@ -22,19 +23,36 @@ class MainActivity: FlutterActivity() , EventChannel.StreamHandler {
   }
   
   
-  override fun dispatchKeyEvent(event : KeyEvent) : Boolean {
+  override fun dispatchKeyEvent(event : KeyEvent) : Boolean { 
+  
     var action = event.getAction()
-    var keycode = event.getKeyCode()
     if (action == KeyEvent.ACTION_DOWN) {
+      var keycode = event.getKeyCode()
       if (keycode == KeyEvent.KEYCODE_VOLUME_UP) {
-        this.streamSink?.success(24)
+        this.streamSink?.success(keycode)
         return true
       }
       else if (keycode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-        this.streamSink?.success(25)
+        this.streamSink?.success(keycode)
+        return true
+      }
+      else if (keycode == KeyEvent.KEYCODE_MENU) {
+        this.streamSink?.success(keycode)
+        return true
+      }
+      else if (keycode == 228) { // switch sim button on LG E435
+        this.streamSink?.success(keycode)
         return true
       }
     }
     return super.dispatchKeyEvent(event)
   }
+  // override fun onNewIntent(intent : Intent) {
+  //   this.streamSink?.success(3)
+  //   super.onNewIntent(intent);
+  // }
+  // override fun onResume() {
+  //   this.streamSink?.success(3)
+  //   super.onResume();
+  // }
 }

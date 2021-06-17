@@ -87,12 +87,52 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     connectTV();
     // connect to volumn buttons
-    _volumeButtonSubscription = volumeButtonEvents.listen((event) {
-      if (tv.isConnected) {
+    _volumeButtonSubscription = volumeButtonEvents.listen((event) async {
+      // if (event == VolumeButtonEvent.HOME_KEY) {
+      //   setState(() {
+      //     _touchpadShown = !_touchpadShown;
+      //   });
+      // } else
+      if (event == VolumeButtonEvent.SWITCH_KEY) {
+        setState(() {
+          _touchpadShown = !_touchpadShown;
+        });
+      } else if (tv.isConnected) {
         if (event == VolumeButtonEvent.VOLUME_UP) {
-          tv.sendKey(KEY_CODES.KEY_VOLUP);
-        } else {
-          tv.sendKey(KEY_CODES.KEY_VOLDOWN);
+          await tv.sendKey(KEY_CODES.KEY_VOLUP);
+        } else if (event == VolumeButtonEvent.VOLUME_DOWN) {
+          await tv.sendKey(KEY_CODES.KEY_VOLDOWN);
+        } else if (event == VolumeButtonEvent.MENU_KEY) {
+          await showDialog(
+            context: context,
+            builder: (ctxDialog) => SingleChildScrollView(
+              child: AlertDialog(
+                contentPadding: const EdgeInsets.all(16.0),
+                content: TextField(
+                  autofocus: true,
+                  controller: textController,
+                  decoration: new InputDecoration(
+                      labelText: 'Search on YouTube',
+                      hintText: 'eg. Wintergatan'),
+                ),
+                actions: [
+                  MaterialButton(
+                      child: const Text('CANCEL'),
+                      onPressed: () {
+                        textController.clear();
+                        Navigator.pop(context);
+                      }),
+                  MaterialButton(
+                      child: const Text('OK'),
+                      onPressed: () {
+                        tv.input(textController.text);
+                        textController.clear();
+                        Navigator.pop(context);
+                      })
+                ],
+              ),
+            ),
+          );
         }
       }
     });
@@ -122,9 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        setState(() {
-          _touchpadShown = !_touchpadShown;
-        });
+        await tv?.sendKey(KEY_CODES.KEY_RETURN);
         return false;
       },
       child: SafeArea(
@@ -255,7 +293,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     SizedBox(height: 50),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ControllerButton(
                           borderRadius: 15,
@@ -378,42 +416,42 @@ class _MyHomePageState extends State<MyHomePage> {
                             await tv.sendKey(KEY_CODES.KEY_REWIND);
                           },
                         ),
-                        ControllerButton(
-                          child: Icon(Icons.keyboard,
-                              size: 20, color: Colors.white54),
-                          onPressed: () async {
-                            await showDialog(
-                              context: context,
-                              builder: (ctxDialog) => SingleChildScrollView(
-                                child: AlertDialog(
-                                  contentPadding: const EdgeInsets.all(16.0),
-                                  content: TextField(
-                                    autofocus: true,
-                                    controller: textController,
-                                    decoration: new InputDecoration(
-                                        labelText: 'Search on YouTube',
-                                        hintText: 'eg. Wintergatan'),
-                                  ),
-                                  actions: [
-                                    MaterialButton(
-                                        child: const Text('CANCEL'),
-                                        onPressed: () {
-                                          textController.clear();
-                                          Navigator.pop(context);
-                                        }),
-                                    MaterialButton(
-                                        child: const Text('OK'),
-                                        onPressed: () {
-                                          tv.input(textController.text);
-                                          textController.clear();
-                                          Navigator.pop(context);
-                                        })
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                        // ControllerButton(
+                        //   child: Icon(Icons.keyboard,
+                        //       size: 20, color: Colors.white54),
+                        //   onPressed: () async {
+                        //     await showDialog(
+                        //       context: context,
+                        //       builder: (ctxDialog) => SingleChildScrollView(
+                        //         child: AlertDialog(
+                        //           contentPadding: const EdgeInsets.all(16.0),
+                        //           content: TextField(
+                        //             autofocus: true,
+                        //             controller: textController,
+                        //             decoration: new InputDecoration(
+                        //                 labelText: 'Search on YouTube',
+                        //                 hintText: 'eg. Wintergatan'),
+                        //           ),
+                        //           actions: [
+                        //             MaterialButton(
+                        //                 child: const Text('CANCEL'),
+                        //                 onPressed: () {
+                        //                   textController.clear();
+                        //                   Navigator.pop(context);
+                        //                 }),
+                        //             MaterialButton(
+                        //                 child: const Text('OK'),
+                        //                 onPressed: () {
+                        //                   tv.input(textController.text);
+                        //                   textController.clear();
+                        //                   Navigator.pop(context);
+                        //                 })
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     );
+                        //   },
+                        // ),
                         ControllerButton(
                           child: Icon(Icons.play_arrow,
                               size: 20, color: Colors.white54),
@@ -487,13 +525,18 @@ class ControllerButton extends StatelessWidget {
                 begin: Alignment.topLeft,
                 colors: [Color(0XFF303030), Color(0XFF1a1a1a)]),
           ),
-          child: MaterialButton(
-            color: color,
-            minWidth: 0,
-            onPressed: onPressed,
-            shape: CircleBorder(),
-            child: child,
-          ),
+          child: child is Column
+              ? Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: child,
+                )
+              : MaterialButton(
+                  color: color,
+                  minWidth: 0,
+                  onPressed: onPressed,
+                  shape: CircleBorder(),
+                  child: child,
+                ),
         ),
       ),
     );

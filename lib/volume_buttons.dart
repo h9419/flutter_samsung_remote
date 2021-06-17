@@ -24,6 +24,9 @@ Stream<VolumeButtonEvent> get volumeButtonEvents {
 enum VolumeButtonEvent {
   VOLUME_UP,
   VOLUME_DOWN,
+  HOME_KEY,
+  MENU_KEY,
+  SWITCH_KEY,
 }
 
 VolumeButtonEvent _eventToVolumeButtonEvent(dynamic event) {
@@ -31,6 +34,12 @@ VolumeButtonEvent _eventToVolumeButtonEvent(dynamic event) {
     return VolumeButtonEvent.VOLUME_UP;
   } else if (event == 25) {
     return VolumeButtonEvent.VOLUME_DOWN;
+  } else if (event == 3) {
+    return VolumeButtonEvent.HOME_KEY;
+  } else if (event == 82) {
+    return VolumeButtonEvent.MENU_KEY;
+  } else if (event == 228) {
+    return VolumeButtonEvent.SWITCH_KEY;
   } else {
     throw Exception('Invalid volume button event');
   }
