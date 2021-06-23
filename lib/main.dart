@@ -44,7 +44,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   StreamSubscription<VolumeButtonEvent> _volumeButtonSubscription;
   SamsungSmartTV tv;
   bool _touchpadShown = false;
@@ -86,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     connectTV();
+    WidgetsBinding.instance?.addObserver(this);
     // connect to volumn buttons
     _volumeButtonSubscription = volumeButtonEvents.listen((event) async {
       // if (event == VolumeButtonEvent.HOME_KEY) {
@@ -141,7 +142,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance?.removeObserver(this);
     _volumeButtonSubscription?.cancel();
+  }
+
+  @override
+  void didChangeAppLifecycleState(final AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      tv.connect(() {
+        setState(() {});
+      });
+    }
   }
 
   Future<void> connectTV() async {

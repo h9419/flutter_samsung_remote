@@ -104,8 +104,7 @@ class SamsungSmartTV {
     }, onDone: () {
       isConnected = false;
       // reconnect upon finishing
-      connect(null);
-      updateState();
+      connect(updateState);
     }, onError: (e) {
       isConnected = false;
       updateState();
